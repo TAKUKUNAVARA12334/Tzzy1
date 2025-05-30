@@ -1,0 +1,51 @@
+-- Grow a Garden AutoFarm + AutoPlant by ChatGPT
+
+local p=game.Players.LocalPlayer
+local g=workspace:WaitForChild("Garden")
+local rs=game:GetService("ReplicatedStorage")
+local plantSeed=rs:WaitForChild("PlantSeed")
+
+local screen=Instance.new("ScreenGui",p:WaitForChild("PlayerGui"))
+local label=Instance.new("TextLabel",screen)
+label.Size=UDim2.new(1,0,0.05,0)
+label.Position=UDim2.new(0,0,0.95,0)
+label.BackgroundColor3=Color3.fromRGB(30,30,30)
+label.TextColor3=Color3.new(1,1,1)
+label.TextScaled=true
+label.Font=Enum.Font.SourceSansBold
+label.Text="Script iniciado"
+
+local function stat(t) label.Text=t end
+
+spawn(function()
+    while wait(3) do
+        for _,pl in pairs(g:GetChildren()) do
+            local plantObj=pl:FindFirstChild("Plant")
+            if plantObj and plantObj:FindFirstChild("ReadyToHarvest") and plantObj.ReadyToHarvest.Value then
+                local cd=plantObj:FindFirstChildWhichIsA("ClickDetector")
+                if cd then
+                    pcall(function()
+                        fireclickdetector(cd)
+                        stat("Colhendo "..pl.Name)
+                    end)
+                end
+            end
+        end
+    end
+end)
+
+spawn(function()
+    while wait(5) do
+        for _,pl in pairs(g:GetChildren()) do
+            if not pl:FindFirstChild("Plant") then
+                local bp=p:FindFirstChild("Backpack")
+                if bp and bp:FindFirstChild("CarrotSeed") then
+                    pcall(function()
+                        plantSeed:FireServer("Carrot")
+                        stat("Plantando em "..pl.Name)
+                    end)
+                end
+            end
+        end
+    end
+end)
